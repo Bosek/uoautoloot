@@ -1,0 +1,120 @@
+;==============================================================================;
+;Autoloot verze 20.8.2016                                                      ;
+;Autor: Gork                                                                   ;
+;Pozn: Vychází z autolootu od Gryfuse                                          ;
+________________________________________________________________________________
+;INFORMACE:                                                                    ;
+;ALT+J zapne autoloot, ALT+G Vypne Atoloot                                     ;
+;Aby fungovaly zkratky musí být script spuštìn (zelená šipka nahoøe)           ;
+;Když pùjdete do mìsta nezapomeòte script vypnout (ALT+G)                      ;
+;Pokud plánujete zabíjet hodnì lidských NPC, vypnìte kuchání.                  ;
+________________________________________________________________________________
+; TODO:                                                                        ;
+; Schopnost kuchnout lidské tìlo a vzít loot ze zemì                           ;
+;==============================================================================;
+set %verze 20 , #DOT , 8 , #DOT , 2016
+set %typyItemu RWF_POF_CPF_WZF_KUF_WUF_JUF_RZF_SZF_KZF_MZF_JZF_IUF_FUF_OZF_GUF_OZF_AMF_LMF_OUF_XUF_TUF_YUF_ZUF_XUF_UUF_NUF_AVF_AQW_LQW_MQW_CQW_ZPW_OQW_BQW_BFF_CFF_HFF_ZMW
+set %vzdalenost 1
+set %kuchat #TRUE ; #TRUE - kuchání zapnuto, #FALSE - kuchání vypnuto
+set %pocitadloKuchani 0
+
+if ( %kuchat = #TRUE )
+  goSub findKnife
+
+event SysMessage Vyber batoh na sbírání
+goSub getTarget
+set %batoh #LTARGETID
+
+event sysMessage Script verze %verze spusten!
+onHotKeyLoop:
+{
+  onHotKey J | ALT ; ALT+J zapne lootování
+  {
+    event SysMessage Autoloot spusten!
+    event SysMessage Nezapomente jej vypnout!
+
+    goto AutoLootLoop
+  }
+  goto onHotKeyLoop
+}
+
+AutoLootLoop:
+{
+  if ( #CHARGHOST = yes )
+  {
+    ; Pokud zemøete, autoloot se automaticky vypne
+    event SysMessage AutoLoot vypnut!
+    goto onHotKeyLoop
+  }
+  onHotKey G | ALT ;Alt+G vypne lootování
+  {
+    event SysMessage AutoLoot vypnut!
+    goto onHotKeyLoop
+  }
+
+  findItem YFM G_ . %vzdalenost
+  if #FINDDIST <= %vzdalenost
+  {
+    if ( %kuchat = #TRUE )
+      goSub gib
+    set #LOBJECTID #FINDID
+    nextCPos 858 420 ; Souøadnice, kde se otevøe gump mrtvoly
+    event Macro 17 ; Otevøe mrtvolu
+    wait 10
+    set %idMrtvoly #LOBJECTID
+    event ExMsg %idMrtvoly 7 0 looting
+    LootujMrtvolu:
+    {
+      onHotKey G | ALT ;Alt+G vypne lootování
+      {
+        event SysMessage AutoLoot vypnut!
+        goto onHotKeyLoop
+      }
+      findItem %typyItemu C_ , %idMrtvoly
+      if #FINDKIND = 0
+      {
+        exEvent Drag #FINDID #FINDSTACK
+        wait 6
+        Exevent Dropc %batoh
+        wait 6
+        if #FINDCNT > 1
+        {
+          goto LootujMrtvolu
+        }
+      }
+      ignoreItem %idMrtvoly
+      click 924 540 r
+    }
+  }
+  goto AutoLootLoop
+}
+stop
+
+sub findKnife
+  findItem CNF C_ , #BACKPACKID
+  if ( #FINDCNT > 0 )
+    set %nuz #findid
+  else
+  {
+    event SysMessage Nemùžu najít kuchací nùž v hlavním batohu. Vypínám kuchání.
+    set %kuchat #FALSE
+  }
+  return
+
+sub getTarget
+  set #TARGCURS 1
+  while ( #TARGCURS = 1 )
+  {
+  }
+  return
+
+sub gib
+  set #LOBJECTID %nuz
+  event Macro 17
+  target
+  set #LTARGETID #FINDID
+  event Macro 22
+  wait 10
+  set %pocitadloKuchani %pocitadloKuchani + 1
+  event SysMessage Vykuchano %pocitadloKuchani
+  return
