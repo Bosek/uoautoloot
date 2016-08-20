@@ -93,7 +93,7 @@ stop
 sub findKnife
   findItem CNF C_ , #BACKPACKID
   if ( #FINDCNT > 0 )
-    set %nuz #findid
+    set %nuz #FINDID
   else
   {
     event SysMessage Nemùžu najít kuchací nùž v hlavním batohu. Vypínám kuchání.
