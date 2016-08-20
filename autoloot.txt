@@ -1,34 +1,34 @@
 ;==============================================================================;
 ;Autoloot verze 20.8.2016                                                      ;
 ;Autor: Gork                                                                   ;
-;Pozn: Vychází z autolootu od Gryfuse                                          ;
+;Pozn: VychÃ¡zÃ­ z autolootu od Gryfuse                                          ;
 ________________________________________________________________________________
 ;INFORMACE:                                                                    ;
 ;ALT+J zapne autoloot, ALT+G Vypne Atoloot                                     ;
-;Aby fungovaly zkratky musí být script spuštìn (zelená šipka nahoøe)           ;
-;Když pùjdete do mìsta nezapomeòte script vypnout (ALT+G)                      ;
-;Pokud plánujete zabíjet hodnì lidských NPC, vypnìte kuchání.                  ;
+;Aby fungovaly zkratky musÃ­ bÃ½t script spuÅ¡tÄ›n (zelenÃ¡ Å¡ipka nahoÅ™e)           ;
+;KdyÅ¾ pÅ¯jdete do mÄ›sta nezapomeÅˆte script vypnout (ALT+G)                      ;
+;Pokud plÃ¡nujete zabÃ­jet hodnÄ› lidskÃ½ch NPC, vypnÄ›te kuchÃ¡nÃ­.                  ;
 ________________________________________________________________________________
 ; TODO:                                                                        ;
-; Schopnost kuchnout lidské tìlo a vzít loot ze zemì                           ;
+; Schopnost kuchnout lidskÃ© tÄ›lo a vzÃ­t loot ze zemÄ›                           ;
 ;==============================================================================;
 set %verze 20 , #DOT , 8 , #DOT , 2016
 set %typyItemu RWF_POF_CPF_WZF_KUF_WUF_JUF_RZF_SZF_KZF_MZF_JZF_IUF_FUF_OZF_GUF_OZF_AMF_LMF_OUF_XUF_TUF_YUF_ZUF_XUF_UUF_NUF_AVF_AQW_LQW_MQW_CQW_ZPW_OQW_BQW_BFF_CFF_HFF_ZMW
 set %vzdalenost 1
-set %kuchat #TRUE ; #TRUE - kuchání zapnuto, #FALSE - kuchání vypnuto
+set %kuchat #TRUE ; #TRUE - kuchÃ¡nÃ­ zapnuto, #FALSE - kuchÃ¡nÃ­ vypnuto
 set %pocitadloKuchani 0
 
 if ( %kuchat = #TRUE )
   goSub findKnife
 
-event SysMessage Vyber batoh na sbírání
+event SysMessage Vyber batoh na sbÃ­rÃ¡nÃ­
 goSub getTarget
 set %batoh #LTARGETID
 
 event sysMessage Script verze %verze spusten!
 onHotKeyLoop:
 {
-  onHotKey J | ALT ; ALT+J zapne lootování
+  onHotKey J | ALT ; ALT+J zapne lootovÃ¡nÃ­
   {
     event SysMessage Autoloot spusten!
     event SysMessage Nezapomente jej vypnout!
@@ -42,11 +42,11 @@ AutoLootLoop:
 {
   if ( #CHARGHOST = yes )
   {
-    ; Pokud zemøete, autoloot se automaticky vypne
+    ; Pokud zemÅ™ete, autoloot se automaticky vypne
     event SysMessage AutoLoot vypnut!
     goto onHotKeyLoop
   }
-  onHotKey G | ALT ;Alt+G vypne lootování
+  onHotKey G | ALT ;Alt+G vypne lootovÃ¡nÃ­
   {
     event SysMessage AutoLoot vypnut!
     goto onHotKeyLoop
@@ -58,14 +58,14 @@ AutoLootLoop:
     if ( %kuchat = #TRUE )
       goSub gib
     set #LOBJECTID #FINDID
-    nextCPos 858 420 ; Souøadnice, kde se otevøe gump mrtvoly
-    event Macro 17 ; Otevøe mrtvolu
+    nextCPos 858 420 ; SouÅ™adnice, kde se otevÅ™e gump mrtvoly
+    event Macro 17 ; OtevÅ™e mrtvolu
     wait 10
     set %idMrtvoly #LOBJECTID
     event ExMsg %idMrtvoly 7 0 looting
     LootujMrtvolu:
     {
-      onHotKey G | ALT ;Alt+G vypne lootování
+      onHotKey G | ALT ;Alt+G vypne lootovÃ¡nÃ­
       {
         event SysMessage AutoLoot vypnut!
         goto onHotKeyLoop
@@ -96,7 +96,7 @@ sub findKnife
     set %nuz #FINDID
   else
   {
-    event SysMessage Nemùžu najít kuchací nùž v hlavním batohu. Vypínám kuchání.
+    event SysMessage NemÅ¯Å¾u najÃ­t kuchacÃ­ nÅ¯Å¾ v hlavnÃ­m batohu. VypÃ­nÃ¡m kuchÃ¡nÃ­.
     set %kuchat #FALSE
   }
   return
