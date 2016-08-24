@@ -1,38 +1,45 @@
 ;==============================================================================;
-;Autoloot verze 20.8.2016                                                      ;
+;Autoloot verze 25.8.2016                                                      ;
 ;Autor: Gork                                                                   ;
-;Pozn: VychÃ¡zÃ­ z autolootu od Gryfuse                                          ;
-________________________________________________________________________________
-;INFORMACE:                                                                    ;
-;ALT+J zapne autoloot, ALT+G Vypne Atoloot                                     ;
-;Aby fungovaly zkratky musÃ­ bÃ½t script spuÅ¡tÄ›n (zelenÃ¡ Å¡ipka nahoÅ™e)           ;
-;KdyÅ¾ pÅ¯jdete do mÄ›sta nezapomeÅˆte script vypnout (ALT+G)                      ;
-;Pokud plÃ¡nujete zabÃ­jet hodnÄ› lidskÃ½ch NPC, vypnÄ›te kuchÃ¡nÃ­.                  ;
-________________________________________________________________________________
-; TODO:                                                                        ;
-; Schopnost kuchnout lidskÃ© tÄ›lo a vzÃ­t loot ze zemÄ›                           ;
 ;==============================================================================;
-set %verze 20 , #DOT , 8 , #DOT , 2016
-set %typyItemu RWF_POF_CPF_WZF_KUF_WUF_JUF_RZF_SZF_KZF_MZF_JZF_IUF_FUF_OZF_GUF_OZF_AMF_LMF_OUF_XUF_TUF_YUF_ZUF_XUF_UUF_NUF_AVF_AQW_LQW_MQW_CQW_ZPW_OQW_BQW_BFF_CFF_HFF_ZMW
+;INFORMACE:                                                                    ;
+;ALT+V zapne/vypne autoloot                                                    ;
+;Pokud plánujete zabíjet hodnì lidských NPC, vypnìte kuchání.                  ;
+;Pøehled typù itemù naleznete na konci skriptu                                 ;
+;==============================================================================;
+;TODO:                                                                         ;
+;Schopnost kuchnout lidské tìlo a vzít loot ze zemì                            ;
+;Vybírat truhly                                                                ;
+;==============================================================================;
+set %verze 25 , #DOT , 8 , #DOT , 2016
+goto databazeTypu
+nastaveni:
+;==============================================================================;
+;NASTAVENÍ:                                                                    ;
+;==============================================================================;
+goSub spojTypy %cennosti %reagenty %obvazy %strelivo %lektvarOsvezeni %drahokamy
+set %typyItemu #RESULT
+
 set %vzdalenost 1
-set %kuchat #TRUE ; #TRUE - kuchÃ¡nÃ­ zapnuto, #FALSE - kuchÃ¡nÃ­ vypnuto
+set %kuchat #TRUE ; #TRUE - kuchání zapnuto, #FALSE - kuchání vypnuto
+
+
 set %pocitadloKuchani 0
-
 if ( %kuchat = #TRUE )
-  goSub findKnife
+  goSub najdiNuz
 
-event SysMessage Vyber batoh na sbÃ­rÃ¡nÃ­
-goSub getTarget
+event SysMessage Vyber batoh na sbírání
+goSub ziskejCil
 set %batoh #LTARGETID
 
-event sysMessage Script verze %verze spusten!
+event sysMessage Script verze %verze spuštìn!
 onHotKeyLoop:
 {
-  onHotKey J | ALT ; ALT+J zapne lootovÃ¡nÃ­
+  onHotKey V | ALT ; ALT+V zapne lootování
   {
-    event SysMessage Autoloot spusten!
-    event SysMessage Nezapomente jej vypnout!
-
+    event SysMessage Autoloot spuštìn!
+    event SysMessage Nezapomeòte jej vypnout!
+    wait 10
     goto AutoLootLoop
   }
   goto onHotKeyLoop
@@ -42,13 +49,13 @@ AutoLootLoop:
 {
   if ( #CHARGHOST = yes )
   {
-    ; Pokud zemÅ™ete, autoloot se automaticky vypne
     event SysMessage AutoLoot vypnut!
     goto onHotKeyLoop
   }
-  onHotKey G | ALT ;Alt+G vypne lootovÃ¡nÃ­
+  onHotKey V | ALT ;Alt+V vypne lootování
   {
     event SysMessage AutoLoot vypnut!
+    wait 10
     goto onHotKeyLoop
   }
 
@@ -56,18 +63,19 @@ AutoLootLoop:
   if #FINDDIST <= %vzdalenost
   {
     if ( %kuchat = #TRUE )
-      goSub gib
+      goSub kuchani
     set #LOBJECTID #FINDID
-    nextCPos 858 420 ; SouÅ™adnice, kde se otevÅ™e gump mrtvoly
-    event Macro 17 ; OtevÅ™e mrtvolu
+    nextCPos 858 420
+    event Macro 17
     wait 10
     set %idMrtvoly #LOBJECTID
-    event ExMsg %idMrtvoly 7 0 looting
+    event ExMsg %idMrtvoly 0 0 looting
     LootujMrtvolu:
     {
-      onHotKey G | ALT ;Alt+G vypne lootovÃ¡nÃ­
+      onHotKey V | ALT ;Alt+V vypne lootování
       {
         event SysMessage AutoLoot vypnut!
+        wait 10
         goto onHotKeyLoop
       }
       findItem %typyItemu C_ , %idMrtvoly
@@ -90,25 +98,25 @@ AutoLootLoop:
 }
 stop
 
-sub findKnife
-  findItem CNF C_ , #BACKPACKID
+sub najdiNuz
+  findItem BNF_CNF C_ , #BACKPACKID
   if ( #FINDCNT > 0 )
     set %nuz #FINDID
   else
   {
-    event SysMessage NemÅ¯Å¾u najÃ­t kuchacÃ­ nÅ¯Å¾ v hlavnÃ­m batohu. VypÃ­nÃ¡m kuchÃ¡nÃ­.
+    event SysMessage Nelze najít kuchací nùž v hlavním batohu. Kuchání vypnuto.
     set %kuchat #FALSE
   }
   return
 
-sub getTarget
+sub ziskejCil
   set #TARGCURS 1
   while ( #TARGCURS = 1 )
   {
   }
   return
 
-sub gib
+sub kuchani
   set #LOBJECTID %nuz
   event Macro 17
   target
@@ -116,5 +124,114 @@ sub gib
   event Macro 22
   wait 10
   set %pocitadloKuchani %pocitadloKuchani + 1
-  event SysMessage Vykuchano %pocitadloKuchani
+  event SysMessage Vykucháno %pocitadloKuchani
   return
+
+  sub spojTypy
+    if ( %0 = 0 )
+    {
+      display Volání goSub spojTypy musí obsahovat argumenty.
+      stop
+    }
+    if ( %0 = 1 )
+      return %1
+
+    set %current 2
+    set %result %1
+    linesPerCycle 1000
+    while ( %current <= %0 )
+    {
+      set %result %result , _ , % . %current
+      set %current %current + 1
+    }
+    linesPerCycle 10
+    return %result
+
+databazeTypu:
+{
+  linesPerCycle 1000
+
+  set %ametyst CWF
+  set %citrin BVF
+  set %diamant UVF
+  set %hvezdnySafir VUF
+  set %jantar RVF
+  set %perla MVF
+  set %rubin HVF
+  set %safir FVF
+  set %smaragd GVF
+  set %turmalin OVF
+  goSub spojTypy %ametyst %citrin %diamant %hvezdnySafir %jantar %perla %rubin %safir %smaragd %turmalin
+  set %drahokamy #RESULT
+
+  set %regCesnek KZF
+  set %regCernaPerla KUF
+  set %regCernyVres HUF
+  set %regDraciKrev QZF
+  set %regDraciSrdce DAG
+  set %regEsenceSlizu ZMW
+  set %regKatovaKukla PZF
+  set %regKostDemona OZF
+  set %regKrevDemona DUF
+  set %regKrvavaJikra EUF
+  set %regKrvavyMech JUF
+  set %regKrystalNox UZF
+  set %regMandragora MZF
+  set %regNetopyriKridlo IUF
+  set %regObsidian VZF
+  set %regPavucina RZF
+  set %regPrachZHrobu TZF
+  set %regRulik WZF
+  set %regSirnyPrach SZF
+  set %regSlizskeOko FUF
+  set %regUrodnaPrst NZF
+  set %regZensen JZF
+  goSub spojTypy %regCesnek %regCernaPerla %regCernyVres %regDraciKrev %regDraciSrdce %regEsenceSlizu %regKatovaKukla %regKostDemona %regKrevDemona %regKrvavaJikra %regKrvavyMech %regKrystalNox %regMandragora %regNetopyriKridlo %regObsidian %regPavucina %regPrachZHrobu %regRulik %regSirnyPrach %regSlizskeOko %regUrodnaPrst %regZensen
+  set %regy #RESULT
+  set %reagenty #RESULT
+
+  set %lektvarHbitost YUF
+  set %lektvarJed AVF
+  set %lektvarLeceni UUF
+  set %lektvarMana RJC
+  set %lektvarMoudrost SUF
+  set %lektvarObnova GPF
+  set %lektvarOsvezeni ZUF
+  set %lektvarProtijed NUF
+  set %lektvarSila XUF
+  set %lektvarSvetlo OUF
+  set %lektvarTranz PUF
+  set %lektvarVybuch TUF
+  goSub spojTypy %lektvarHbitost %lektvarJed %lektvarLeceni %lektvarMana %lektvarMoudrost %lektvarObnova %lektvarOsvezeni %lektvarProtijed %lektvarSila %lektvarSvetlo %lektvarTranz %lektvarVybuch
+  set %lektvary #RESULT
+
+  set %hulka BFF_CFF_HFF_IFF
+  set %svitek LMF
+
+  set %hedvabi %regPavucina
+  set %hedvabnaNit QLF
+  set %mapa XVH
+  set %navod %svitek
+  set %penize POF_CPF
+  set %soskaKone SJR
+  set %temnaNit UAG
+  goSub spojTypy %hedvabnaNit %mapa %navod %penize %soskaKone %temnaNit
+  set %cennosti #RESULT
+
+  set %kost GUF
+  set %kuze EEG
+  set %lahvicka WUF
+  set %obvazKrvavy AMF
+  set %obvazObycejny ZLF
+  goSub spojTypy %obvazKrvavy %obvazObycejny
+  set %obvaz #RESULT
+  set %pirko VLK
+
+  set %sipka LNK
+  set %sip RWF
+  goSub spojTypy %sipk %sip
+  set %strelivo #RESULT
+
+  linesPerCycle 10
+}
+goto nastaveni
