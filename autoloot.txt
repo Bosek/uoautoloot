@@ -229,7 +229,7 @@ databazeTypu:
 
   set %sipka LNK
   set %sip RWF
-  goSub spojTypy %sipk %sip
+  goSub spojTypy %sipka %sip
   set %strelivo #RESULT
 
   linesPerCycle 10
