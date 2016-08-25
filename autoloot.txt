@@ -224,7 +224,7 @@ databazeTypu:
   set %obvazKrvavy AMF
   set %obvazObycejny ZLF
   goSub spojTypy %obvazKrvavy %obvazObycejny
-  set %obvaz #RESULT
+  set %obvazy #RESULT
   set %pirko VLK
 
   set %sipka LNK
