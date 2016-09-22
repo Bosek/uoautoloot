@@ -4,25 +4,20 @@
 ;==============================================================================;
 ;INFORMACE:                                                                    ;
 ;ALT+V zapne/vypne autoloot                                                    ;
-;Pokud plánujete zabíjet hodnì lidských NPC, vypnìte kuchání.                  ;
+;ALT+C vylootuje targetnutý kontejner                                          ;
 ;Pøehled typù itemù naleznete na konci skriptu                                 ;
 ;==============================================================================;
-;TODO:                                                                         ;
-;Schopnost kuchnout lidské tìlo a vzít loot ze zemì                            ;
-;Vybírat truhly                                                                ;
-;==============================================================================;
-set %verze 25 , #DOT , 8 , #DOT , 2016
+set %verze 22 , #DOT , 9 , #DOT , 2016
 goto databazeTypu
 nastaveni:
 ;==============================================================================;
 ;NASTAVENÍ:                                                                    ;
 ;==============================================================================;
-goSub spojTypy %cennosti %reagenty %obvazy %strelivo %lektvarOsvezeni %drahokamy
+goSub spojTypy %cennosti %reagenty %obvazy %lektvarOsvezeni %drahokamy %zamotek %strelivo ;%kuze %pirko %maso
 set %typyItemu #RESULT
 
 set %vzdalenost 1
 set %kuchat #TRUE ; #TRUE - kuchání zapnuto, #FALSE - kuchání vypnuto
-
 
 set %pocitadloKuchani 0
 if ( %kuchat = #TRUE )
@@ -42,6 +37,13 @@ onHotKeyLoop:
     wait 10
     goto AutoLootLoop
   }
+  onHotKey C | ALT ;Alt+C vylootuje kontejner
+  {
+   event SysMessage Vyber kontejner k vylootování
+   goSub ziskejCil
+   if ( #LTARGETID <> YC )
+      goSub lootAll #LTARGETID %batoh
+  }
   goto onHotKeyLoop
 }
 
@@ -58,79 +60,102 @@ AutoLootLoop:
     wait 10
     goto onHotKeyLoop
   }
+  onHotKey C | ALT ;Alt+C vylootuje kontejner
+  {
+   event SysMessage Vyber kontejner k vylootování
+   goSub ziskejCil
+   if ( #LTARGETID <> YC )
+      goSub lootAll #LTARGETID %batoh
+  }
 
   findItem YFM G_ . %vzdalenost
-  if #FINDDIST <= %vzdalenost
+  if ( #FINDDIST <= %vzdalenost )
   {
     if ( %kuchat = #TRUE )
       goSub kuchani
-    set #LOBJECTID #FINDID
-    nextCPos 858 420
-    event Macro 17
-    wait 10
-    set %idMrtvoly #LOBJECTID
-    event ExMsg %idMrtvoly 0 0 looting
-    LootujMrtvolu:
-    {
-      onHotKey V | ALT ;Alt+V vypne lootování
-      {
-        event SysMessage AutoLoot vypnut!
-        wait 10
-        goto onHotKeyLoop
-      }
-      findItem %typyItemu C_ , %idMrtvoly
-      if #FINDKIND = 0
-      {
-        exEvent Drag #FINDID #FINDSTACK
-        wait 6
-        Exevent Dropc %batoh
-        wait 6
-        if #FINDCNT > 1
-        {
-          goto LootujMrtvolu
-        }
-      }
-      ignoreItem %idMrtvoly
-      click 924 540 r
-    }
+
+    goSub lootAll #FINDID %batoh
+    goSub lootGround %batoh
+    ignoreItem #FINDID
   }
   goto AutoLootLoop
 }
 stop
 
+sub lootAll
+    set #LOBJECTID %1
+    nextCPos 858 420
+    event Macro 17
+    wait 5
+    event ExMsg %idMrtvoly 0 0 looting
+    
+    while ( #TRUE )
+    {
+     findItem %typyItemu C_ , %1
+     if ( #FINDCNT = 0 )
+        break
+     if ( #FINDKIND = 0 )
+     {
+      exEvent Drag #FINDID #FINDSTACK
+      wait 3
+      exEvent Dropc %2
+      wait 3
+     }
+    }
+    
+    click 924 540 r
+    return
+    
+sub lootGround
+    while ( #TRUE )
+    {
+     findItem %typyItemu G_ , %vzdalenost
+     if ( #FINDCNT = 0 )
+        break
+     if ( #FINDKIND = 1 )
+     {
+      exEvent Drag #FINDID #FINDSTACK
+      wait 3
+      exEvent Dropc %1
+      wait 3
+     }
+    }
+    return
+
 sub najdiNuz
-  findItem BNF_CNF C_ , #BACKPACKID
-  if ( #FINDCNT > 0 )
-    set %nuz #FINDID
-  else
-  {
-    event SysMessage Nelze najít kuchací nùž v hlavním batohu. Kuchání vypnuto.
-    set %kuchat #FALSE
-  }
-  return
+    findItem BNF_CNF C_ , #BACKPACKID
+    if ( #FINDCNT > 0 )
+       set %nuz #FINDID
+    else
+    {
+     event SysMessage Nelze najít kuchací nùž v hlavním batohu. Kuchání vypnuto.
+     set %kuchat #FALSE
+    }
+    return
 
 sub ziskejCil
-  set #TARGCURS 1
-  while ( #TARGCURS = 1 )
-  {
-  }
-  return
+    set #LTARGETID YC
+    set #TARGCURS 1
+    while ( #TARGCURS = 1 )
+    {
+    }
+    return
 
 sub kuchani
-  set #LOBJECTID %nuz
-  event Macro 17
-  target
-  set #LTARGETID #FINDID
-  event Macro 22
-  wait 10
-  set %pocitadloKuchani %pocitadloKuchani + 1
-  event SysMessage Vykucháno %pocitadloKuchani
-  return
+    set #LOBJECTID %nuz
+    event Macro 17
+    target
+    set #LTARGETID #FINDID
+    event Macro 22
+    wait 8
+    set %pocitadloKuchani %pocitadloKuchani + 1
+    event SysMessage Vykucháno %pocitadloKuchani
+    return
 
-  sub spojTypy
+sub spojTypy
     if ( %0 = 0 )
     {
-      display Volání goSub spojTypy musí obsahovat argumenty.
+      display Volání spojTypy musí obsahovat argumenty.
       stop
     }
     if ( %0 = 1 )
@@ -180,13 +205,14 @@ databazeTypu:
   set %regNetopyriKridlo IUF
   set %regObsidian VZF
   set %regPavucina RZF
+  set %regPemza XZF
   set %regPrachZHrobu TZF
   set %regRulik WZF
   set %regSirnyPrach SZF
   set %regSlizskeOko FUF
   set %regUrodnaPrst NZF
   set %regZensen JZF
-  goSub spojTypy %regCesnek %regCernaPerla %regCernyVres %regDraciKrev %regDraciSrdce %regEsenceSlizu %regKatovaKukla %regKostDemona %regKrevDemona %regKrvavaJikra %regKrvavyMech %regKrystalNox %regMandragora %regNetopyriKridlo %regObsidian %regPavucina %regPrachZHrobu %regRulik %regSirnyPrach %regSlizskeOko %regUrodnaPrst %regZensen
+  goSub spojTypy %regCesnek %regCernaPerla %regCernyVres %regDraciKrev %regDraciSrdce %regEsenceSlizu %regKatovaKukla %regKostDemona %regKrevDemona %regKrvavaJikra %regKrvavyMech %regKrystalNox %regMandragora %regNetopyriKridlo %regObsidian %regPavucina %regPemza %regPrachZHrobu %regRulik %regSirnyPrach %regSlizskeOko %regUrodnaPrst %regZensen
   set %regy #RESULT
   set %reagenty #RESULT
 
@@ -226,11 +252,14 @@ databazeTypu:
   goSub spojTypy %obvazKrvavy %obvazObycejny
   set %obvazy #RESULT
   set %pirko VLK
+  set %zamotek OWI
 
   set %sipka LNK
   set %sip RWF
   goSub spojTypy %sipka %sip
   set %strelivo #RESULT
+  
+  set %maso VRD_PUD
 
   linesPerCycle 10
 }
