@@ -5,48 +5,48 @@
 ;==============================================================================
 ;INFORMACE:
 ;ALT+V zapne/vypne autoloot
-;ALT+C vylootuje targetnut˝ kontejner
-;P¯ehled typ˘ item˘ naleznete na konci skriptu
+;ALT+C vylootuje targetnut√Ω kontejner
+;P≈ôehled typ≈Ø item≈Ø naleznete na konci skriptu
 ;==============================================================================
 set %verze 19 , #DOT , 1 , #DOT , 2021
 goto databazeTypu
 nastaveni:
 ;==============================================================================
-;NASTAVENÕ:
+;NASTAVEN√ç:
 ;==============================================================================
 goSub spojTypy %cennosti %reagenty %obvazy %lektvarOsvezeni %drahokamy %zamotek %zub %strelivo ;%maso
 set %typyItemu #RESULT
 
 set %vzdalenost 1
-set %kuchat #TRUE ; #TRUE - kuch·nÌ zapnuto, #FALSE - kuch·nÌ vypnuto
+set %kuchat #TRUE ; #TRUE - kuch√°n√≠ zapnuto, #FALSE - kuch√°n√≠ vypnuto
 
-;MUSÕ B›T ZAPNUTO LOOCENÕ STÿELIVA:
-set %jenBarevneStrelivo #TRUE ; #TRUE - bere jen barevnÈ st¯elivo, #FALSE - bere vöechno st¯elivo
+;MUS√ç B√ùT ZAPNUTO LOOCEN√ç ST≈òELIVA:
+set %jenBarevneStrelivo #TRUE ; #TRUE - bere jen barevn√© st≈ôelivo, #FALSE - bere v≈°echno st≈ôelivo
 ;==============================================================================
-;KONEC NASTAVENÕ
+;KONEC NASTAVEN√ç
 ;==============================================================================
 
 set %pocitadloKuchani 0
 if ( %kuchat = #TRUE )
   goSub najdiNuz
 
-event SysMessage Vyber batoh na sbÌr·nÌ
+event SysMessage Vyber batoh na sb√≠r√°n√≠
 goSub ziskejCil
 set %batoh #LTARGETID
 
-event sysMessage Script verze %verze spuötÏn! V˝voj m˘ûete sledovat na https://github.com/bosek/uoautoloot
+event sysMessage Script verze %verze spu≈°tƒõn! V√Ωvoj m≈Ø≈æete sledovat na https://github.com/bosek/uoautoloot
 onHotKeyLoop:
 {
-  onHotKey V | ALT ; ALT+V zapne lootov·nÌ
+  onHotKey V | ALT ; ALT+V zapne lootov√°n√≠
   {
-    event SysMessage Autoloot spuötÏn!
-    event SysMessage NezapomeÚte jej vypnout!
+    event SysMessage Autoloot spu≈°tƒõn!
+    event SysMessage Nezapome≈àte jej vypnout!
     wait 10
     goto AutoLootLoop
   }
   onHotKey C | ALT ;Alt+C vylootuje kontejner
   {
-    event SysMessage Vyber kontejner k vylootov·nÌ
+    event SysMessage Vyber kontejner k vylootov√°n√≠
     goSub ziskejCil
     if ( #LTARGETID <> YC )
       goSub lootAll #LTARGETID %batoh
@@ -61,7 +61,7 @@ AutoLootLoop:
     event SysMessage AutoLoot vypnut!
     goto onHotKeyLoop
   }
-  onHotKey V | ALT ;Alt+V vypne lootov·nÌ
+  onHotKey V | ALT ;Alt+V vypne lootov√°n√≠
   {
     event SysMessage AutoLoot vypnut!
     wait 10
@@ -69,7 +69,7 @@ AutoLootLoop:
   }
   onHotKey C | ALT ;Alt+C vylootuje kontejner
   {
-    event SysMessage Vyber kontejner k vylootov·nÌ
+    event SysMessage Vyber kontejner k vylootov√°n√≠
     goSub ziskejCil
     if ( #LTARGETID <> YC )
       goSub lootAll #LTARGETID %batoh
@@ -157,7 +157,7 @@ sub najdiNuz
         set %nuz #FINDID
     else
     {
-      event SysMessage Nelze najÌt kuchacÌ n?û v hlavnÌm batohu. Kuch·nÌ vypnuto.
+      event SysMessage Nelze naj√≠t kuchac√≠ n?≈æ v hlavn√≠m batohu. Kuch√°n√≠ vypnuto.
       set %kuchat #FALSE
     }
     return
@@ -179,13 +179,13 @@ sub kuchani
     event Macro 22
     wait 10
     set %pocitadloKuchani %pocitadloKuchani + 1
-    event SysMessage Vykuch·no %pocitadloKuchani
+    event SysMessage Vykuch√°no %pocitadloKuchani
     return
 
 sub spojTypy
     if ( %0 = 0 )
     {
-      display Vol·nÌ spojTypy musÌ obsahovat argumenty.
+      display Vol√°n√≠ spojTypy mus√≠ obsahovat argumenty.
       stop
     }
     if ( %0 = 1 )
