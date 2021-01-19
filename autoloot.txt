@@ -5,48 +5,48 @@
 ;==============================================================================
 ;INFORMACE:
 ;ALT+V zapne/vypne autoloot
-;ALT+C vylootuje targetnutý kontejner
-;Přehled typů itemů naleznete na konci skriptu
+;ALT+C vylootuje targetnuty kontejner
+;Prehled typu itemu naleznete na konci skriptu
 ;==============================================================================
 set %verze 19 , #DOT , 1 , #DOT , 2021
 goto databazeTypu
 nastaveni:
 ;==============================================================================
-;NASTAVENÍ:
+;NASTAVENI:
 ;==============================================================================
 goSub spojTypy %cennosti %reagenty %obvazy %lektvarOsvezeni %drahokamy %zamotek %zub %strelivo ;%maso
 set %typyItemu #RESULT
 
 set %vzdalenost 1
-set %kuchat #TRUE ; #TRUE - kuchání zapnuto, #FALSE - kuchání vypnuto
+set %kuchat #TRUE ; #TRUE - kuchani zapnuto, #FALSE - kuchani vypnuto
 
-;MUSÍ BÝT ZAPNUTO LOOCENÍ STŘELIVA:
-set %jenBarevneStrelivo #TRUE ; #TRUE - bere jen barevné střelivo, #FALSE - bere všechno střelivo
+;MUSI BYT ZAPNUTO LOOCENI STRELIVA:
+set %jenBarevneStrelivo #TRUE ; #TRUE - bere jen barevne strelivo, #FALSE - bere vsechno strelivo
 ;==============================================================================
-;KONEC NASTAVENÍ
+;KONEC NASTAVENI
 ;==============================================================================
 
 set %pocitadloKuchani 0
 if ( %kuchat = #TRUE )
   goSub najdiNuz
 
-event SysMessage Vyber batoh na sbírání
+event SysMessage Vyber batoh na sbirani
 goSub ziskejCil
 set %batoh #LTARGETID
 
-event sysMessage Script verze %verze spuštěn! Vývoj můžete sledovat na https://github.com/bosek/uoautoloot
+event sysMessage Script verze %verze spusten! Vyvoj muzete sledovat na https://github.com/bosek/uoautoloot
 onHotKeyLoop:
 {
-  onHotKey V | ALT ; ALT+V zapne lootování
+  onHotKey V | ALT ; ALT+V zapne lootovani
   {
-    event SysMessage Autoloot spuštěn!
-    event SysMessage Nezapomeňte jej vypnout!
+    event SysMessage Autoloot spusten!
+    event SysMessage Nezapomente jej vypnout!
     wait 10
     goto AutoLootLoop
   }
   onHotKey C | ALT ;Alt+C vylootuje kontejner
   {
-    event SysMessage Vyber kontejner k vylootování
+    event SysMessage Vyber kontejner k vylootovani
     goSub ziskejCil
     if ( #LTARGETID <> YC )
       goSub lootAll #LTARGETID %batoh
@@ -61,7 +61,7 @@ AutoLootLoop:
     event SysMessage AutoLoot vypnut!
     goto onHotKeyLoop
   }
-  onHotKey V | ALT ;Alt+V vypne lootování
+  onHotKey V | ALT ;Alt+V vypne lootovani
   {
     event SysMessage AutoLoot vypnut!
     wait 10
@@ -69,7 +69,7 @@ AutoLootLoop:
   }
   onHotKey C | ALT ;Alt+C vylootuje kontejner
   {
-    event SysMessage Vyber kontejner k vylootování
+    event SysMessage Vyber kontejner k vylootovani
     goSub ziskejCil
     if ( #LTARGETID <> YC )
       goSub lootAll #LTARGETID %batoh
@@ -157,7 +157,7 @@ sub najdiNuz
         set %nuz #FINDID
     else
     {
-      event SysMessage Nelze najít kuchací n?ž v hlavním batohu. Kuchání vypnuto.
+      event SysMessage Nelze najit kuchaci nuz v hlavnim batohu. Kuchani vypnuto!
       set %kuchat #FALSE
     }
     return
@@ -179,13 +179,13 @@ sub kuchani
     event Macro 22
     wait 10
     set %pocitadloKuchani %pocitadloKuchani + 1
-    event SysMessage Vykucháno %pocitadloKuchani
+    event SysMessage Vykuchano %pocitadloKuchani
     return
 
 sub spojTypy
     if ( %0 = 0 )
     {
-      display Volání spojTypy musí obsahovat argumenty.
+      display Volani spojTypy musi obsahovat argumenty.
       stop
     }
     if ( %0 = 1 )
