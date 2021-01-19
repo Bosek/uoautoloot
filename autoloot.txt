@@ -1,19 +1,19 @@
-;==============================================================================;
-;Autoloot verze 19.1.2021                                                      
-;Autor: Gork                                                                   ;
-;THX: Galbor, Shinobi a Matteo                                                                   ;
-;==============================================================================;
-;INFORMACE:                                                                    ;
-;ALT+V zapne/vypne autoloot                                                    ;
-;ALT+C vylootuje targetnutý kontejner                                          ;
-;Pøehled typ? itemù naleznete na konci skriptu                                 ;
-;==============================================================================;
+;==============================================================================
+;Autoloot verze 19.1.2021
+;Autor: Gork
+;THX: Galbor, Shinobi a Matteo
+;==============================================================================
+;INFORMACE:
+;ALT+V zapne/vypne autoloot
+;ALT+C vylootuje targetnutý kontejner
+;Pøehled typù itemù naleznete na konci skriptu
+;==============================================================================
 set %verze 19 , #DOT , 1 , #DOT , 2021
 goto databazeTypu
 nastaveni:
-;==============================================================================;
-;NASTAVENÍ:                                                                    ;
-;==============================================================================;
+;==============================================================================
+;NASTAVENÍ:
+;==============================================================================
 goSub spojTypy %cennosti %reagenty %obvazy %lektvarOsvezeni %drahokamy %zamotek %zub %strelivo ;%maso
 set %typyItemu #RESULT
 
@@ -22,9 +22,9 @@ set %kuchat #TRUE ; #TRUE - kuchání zapnuto, #FALSE - kuchání vypnuto
 
 ;MUSÍ BÝT ZAPNUTO LOOCENÍ STØELIVA:
 set %jenBarevneStrelivo #TRUE ; #TRUE - bere jen barevné støelivo, #FALSE - bere všechno støelivo
-;==============================================================================;
-;KONEC NASTAVENÍ                                                               ;
-;==============================================================================;
+;==============================================================================
+;KONEC NASTAVENÍ
+;==============================================================================
 
 set %pocitadloKuchani 0
 if ( %kuchat = #TRUE )
