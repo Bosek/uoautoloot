@@ -34,7 +34,7 @@ event SysMessage Vyber batoh na sbirani
 goSub ziskejCil
 set %batoh #LTARGETID
 
-event sysMessage Script verze %verze spusten! Vyvoj muzete sledovat na https://github.com/bosek/uoautoloot
+event sysMessage Script verze %verze spusten!
 onHotKeyLoop:
 {
   onHotKey V | ALT ; ALT+V zapne lootovani
