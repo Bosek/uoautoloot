@@ -36,7 +36,6 @@ goSub ziskejCil
 set %batoh #LTARGETID
 
 event SysMessage Script verze %verze spusten!
-event SysMessage https://github.com/bosek/uoautoloot
 onHotKeyLoop:
 {
   onHotKey V | ALT ; ALT+V zapne lootovani
