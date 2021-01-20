@@ -1,14 +1,15 @@
 ;==============================================================================
-;Autoloot verze 19.1.2021
+;Autoloot verze 20.1.2021
 ;Autor: Gork
 ;THX: Galbor, Shinobi a Matteo
+;Nejnovejsi verzi muzete vzdy najit na https://github.com/bosek/uoautoloot
 ;==============================================================================
 ;INFORMACE:
 ;ALT+V zapne/vypne autoloot
 ;ALT+C vylootuje targetnuty kontejner
 ;Prehled typu itemu naleznete na konci skriptu
 ;==============================================================================
-set %verze 19 , #DOT , 1 , #DOT , 2021
+set %verze 20 , #DOT , 1 , #DOT , 2021
 goto databazeTypu
 nastaveni:
 ;==============================================================================
@@ -34,7 +35,8 @@ event SysMessage Vyber batoh na sbirani
 goSub ziskejCil
 set %batoh #LTARGETID
 
-event sysMessage Script verze %verze spusten!
+event SysMessage Script verze %verze spusten!
+event SysMessage https://github.com/bosek/uoautoloot
 onHotKeyLoop:
 {
   onHotKey V | ALT ; ALT+V zapne lootovani
@@ -108,7 +110,7 @@ sub lootAll
           ignoreItem #FINDID
           continue
         }
-        set %maBarvuNavodu ( #FINDCOL in %barvyNavodu )
+        set %maBarvuNavodu ( #FINDCOL in %barvyNavodu && #FINDCOL <> 0 )
         if ( #FINDTYPE in %navod && %maBarvuNavodu = #FALSE )
         {
           ignoreItem #FINDID
