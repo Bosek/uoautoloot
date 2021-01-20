@@ -138,7 +138,7 @@ sub lootGround
           ignoreItem #FINDID
           continue
         }
-        set %maBarvuNavodu ( #FINDCOL in %barvyNavodu )
+        set %maBarvuNavodu ( #FINDCOL in %barvyNavodu && #FINDCOL <> 0 )
         if ( #FINDTYPE in %navod && %maBarvuNavodu = #FALSE )
         {
           ignoreItem #FINDID
